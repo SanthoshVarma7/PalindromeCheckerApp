@@ -1,25 +1,25 @@
 import java.util.Scanner;
+import java.util.Stack;
 
 public class PalindromeCheckerApp {
 
     public static boolean isPalindrome(String input) {
 
-        // Convert String to Character Array
-        char[] characters = input.toCharArray();
+        // Create Stack
+        Stack<Character> stack = new Stack<>();
 
-        // Two-pointer approach
-        int left = 0;
-        int right = characters.length - 1;
+        // Push characters into stack
+        for (int i = 0; i < input.length(); i++) {
+            stack.push(input.charAt(i));
+        }
 
-        while (left < right) {
+        // Pop and compare
+        for (int i = 0; i < input.length(); i++) {
+            char poppedChar = stack.pop();
 
-            // Compare start and end characters
-            if (characters[left] != characters[right]) {
+            if (input.charAt(i) != poppedChar) {
                 return false;
             }
-
-            left++;
-            right--;
         }
 
         return true;
