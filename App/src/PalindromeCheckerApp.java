@@ -1,33 +1,47 @@
-class PalindromeCheckerApp {
+// PalindromeChecker class (Encapsulated Service Class)
+class PalindromeChecker {
 
-    // Method to check palindrome after preprocessing
-    public static boolean isPalindrome(String input) {
+    // Public method to check palindrome
+    public boolean checkPalindrome(String input) {
 
-        // Step 1: Normalize string
-        // Remove spaces and convert to lowercase
+        if (input == null) {
+            return false;
+        }
+
+        // Normalize input (ignore spaces and case)
         String normalized = input.replaceAll("\\s+", "").toLowerCase();
 
-        int start = 0;
-        int end = normalized.length() - 1;
+        int left = 0;
+        int right = normalized.length() - 1;
 
-        // Step 2: Apply palindrome logic
-        while (start < end) {
-            if (normalized.charAt(start) != normalized.charAt(end)) {
+        // Two-pointer comparison
+        while (left < right) {
+            if (normalized.charAt(left) != normalized.charAt(right)) {
                 return false;
             }
-            start++;
-            end--;
+            left++;
+            right--;
         }
 
         return true;
     }
+}
+
+
+// Main Application Class
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
-        String input = "A man a plan a canal Panama";   // You can change input here
+        String input = "Madam";   // You can change input here
 
-        if (isPalindrome(input)) {
-            System.out.println("\"" + input + "\"" + " is a Palindrome (Ignoring spaces & case).");
+        // Create object of PalindromeChecker
+        PalindromeChecker checker = new PalindromeChecker();
+
+        boolean result = checker.checkPalindrome(input);
+
+        if (result) {
+            System.out.println("\"" + input + "\"" + " is a Palindrome.");
         } else {
             System.out.println("\"" + input + "\"" + " is NOT a Palindrome.");
         }
