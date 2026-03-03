@@ -1,87 +1,123 @@
 import java.util.*;
 
-public class PalindromeCheckerApp {
+// Strategy Interface
+interface PalindromeStrategy {
+    boolean isPalindrome(String input);
+}
 
-    //  Two-Pointer Approach
-    public static boolean twoPointerCheck(String input) {
-        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+// Stack-based Strategy Implementation
+class StackStrategy implements PalindromeStrategy {
 
-        int left = 0;
-        int right = normalized.length() - 1;
-
-        while (left < right) {
-            if (normalized.charAt(left) != normalized.charAt(right)) {
-                return false;
-            }
-            left++;
-            right--;
-        }
-        return true;
-    }
-
-    // Stack-Based Approach
-    public static boolean stackCheck(String input) {
-        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+    @Override
+    public boolean isPalindrome(String input) {
 
         Stack<Character> stack = new Stack<>();
 
-        for (char ch : normalized.toCharArray()) {
+        // Normalize string (remove spaces and convert to lowercase)
+        String processed = input.replaceAll("\\s+", "").toLowerCase();
+
+        // Push all characters to stack
+        for (char ch : processed.toCharArray()) {
             stack.push(ch);
         }
 
-        for (char ch : normalized.toCharArray()) {
+        // Compare characters while popping
+        for (char ch : processed.toCharArray()) {
             if (ch != stack.pop()) {
                 return false;
             }
         }
+
         return true;
     }
+}
 
-    // Recursive Approach
-    public static boolean recursiveCheck(String str, int start, int end) {
-        if (start >= end) {
-            return true;
+// Deque-based Strategy Implementation
+class DequeStrategy implements PalindromeStrategy {
+
+    @Override
+    public boolean isPalindrome(String input) {
+
+        Deque<Character> deque = new ArrayDeque<>();
+
+        // Normalize string (remove spaces and convert to lowercase)
+        String processed = input.replaceAll("\\s+", "").toLowerCase();
+
+        // Add all characters to deque
+        for (char ch : processed.toCharArray()) {
+            deque.addLast(ch);
         }
-        if (str.charAt(start) != str.charAt(end)) {
-            return false;
+
+        // Compare from both ends
+        while (deque.size() > 1) {
+            if (!deque.removeFirst().equals(deque.removeLast())) {
+                return false;
+            }
         }
-        return recursiveCheck(str, start + 1, end - 1);
+
+        return true;
     }
+}
+
+// Context Class
+class PalindromeChecker {
+
+    private PalindromeStrategy strategy;
+
+    // Constructor Injection
+    public PalindromeChecker(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    // Setter Injection (Optional – for dynamic change)
+    public void setStrategy(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean check(String input) {
+        return strategy.isPalindrome(input);
+    }
+}
+
+// Main Application
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
-        String input = "A man a plan a canal Panama";
-        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+        Scanner scanner = new Scanner(System.in);
 
-        // Two Pointer Timing
-        long startTime = System.nanoTime();
-        boolean result1 = twoPointerCheck(input);
-        long endTime = System.nanoTime();
-        long duration1 = endTime - startTime;
+        System.out.println("=== Palindrome Checker App (Strategy Pattern) ===");
+        System.out.print("Enter a string: ");
+        String input = scanner.nextLine();
 
-        // Stack Timing
-        startTime = System.nanoTime();
-        boolean result2 = stackCheck(input);
-        endTime = System.nanoTime();
-        long duration2 = endTime - startTime;
+        System.out.println("\nChoose Algorithm:");
+        System.out.println("1. Stack Strategy");
+        System.out.println("2. Deque Strategy");
+        System.out.print("Enter choice (1 or 2): ");
+        int choice = scanner.nextInt();
 
-        // Recursive Timing
-        startTime = System.nanoTime();
-        boolean result3 = recursiveCheck(normalized, 0, normalized.length() - 1);
-        endTime = System.nanoTime();
-        long duration3 = endTime - startTime;
+        PalindromeStrategy strategy;
 
-        System.out.println("Input: \"" + input + "\"\n");
+        // Inject strategy dynamically
+        if (choice == 1) {
+            strategy = new StackStrategy();
+        } else if (choice == 2) {
+            strategy = new DequeStrategy();
+        } else {
+            System.out.println("Invalid choice! Defaulting to Stack Strategy.");
+            strategy = new StackStrategy();
+        }
 
-        System.out.println("Two Pointer Result: " + result1);
-        System.out.println("Execution Time: " + duration1 + " ns\n");
+        PalindromeChecker checker = new PalindromeChecker(strategy);
 
-        System.out.println("Stack Result: " + result2);
-        System.out.println("Execution Time: " + duration2 + " ns\n");
+        boolean result = checker.check(input);
 
-        System.out.println("Recursive Result: " + result3);
-        System.out.println("Execution Time: " + duration3 + " ns\n");
+        if (result) {
+            System.out.println("\nResult: The string is a PALINDROME.");
+        } else {
+            System.out.println("\nResult: The string is NOT a palindrome.");
+        }
 
-        System.out.println("Performance Comparison Completed.");
+        scanner.close();
     }
 }
