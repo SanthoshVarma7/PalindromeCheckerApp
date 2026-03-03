@@ -1,23 +1,62 @@
-import java.util.Scanner;
+import java.util.*;
 
-public class PalindromeCheckerApp {
+// Strategy Interface
+interface PalindromeStrategy {
+    boolean check(String input);
+}
 
-    // Approach 1: Using StringBuilder reverse
-    public static boolean isPalindromeUsingStringBuilder(String str) {
-        String reversed = new StringBuilder(str).reverse().toString();
-        return str.equals(reversed);
-    }
 
-    // Approach 2: Using two-pointer technique
-    public static boolean isPalindromeTwoPointer(String str) {
-        int left = 0;
-        int right = str.length() - 1;
-        while (left < right) {
-            if (str.charAt(left) != str.charAt(right)) {
+// Stack-Based Strategy
+class StackStrategy implements PalindromeStrategy {
+
+    @Override
+    public boolean check(String input) {
+
+        if (input == null) return false;
+
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+
+        Stack<Character> stack = new Stack<>();
+
+        // Push all characters onto stack
+        for (char ch : normalized.toCharArray()) {
+            stack.push(ch);
+        }
+
+        // Compare characters while popping
+        for (char ch : normalized.toCharArray()) {
+            if (ch != stack.pop()) {
                 return false;
             }
-            left++;
-            right--;
+        }
+
+        return true;
+    }
+}
+
+
+// Deque-Based Strategy
+class DequeStrategy implements PalindromeStrategy {
+
+    @Override
+    public boolean check(String input) {
+
+        if (input == null) return false;
+
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+
+        Deque<Character> deque = new ArrayDeque<>();
+
+        // Add all characters to deque
+        for (char ch : normalized.toCharArray()) {
+            deque.add(ch);
+        }
+
+        // Compare from both ends
+        while (deque.size() > 1) {
+            if (!deque.pollFirst().equals(deque.pollLast())) {
+                return false;
+            }
         }
         return true;
     }
@@ -27,34 +66,42 @@ public class PalindromeCheckerApp {
         return checkPalindromeRecursive(str, 0, str.length() - 1);
     }
 
-    private static boolean checkPalindromeRecursive(String str, int left, int right) {
-        if (left >= right) {
-            return true;
-        }
-        if (str.charAt(left) != str.charAt(right)) {
-            return false;
-        }
-        return checkPalindromeRecursive(str, left + 1, right - 1);
+// Context Class
+class PalindromeContext {
+
+    private PalindromeStrategy strategy;
+
+    // Constructor Injection
+    public PalindromeContext(PalindromeStrategy strategy) {
+        this.strategy = strategy;
     }
+
+    public void setStrategy(PalindromeStrategy strategy) {
+        this.strategy = strategy;
+    }
+
+    public boolean execute(String input) {
+        return strategy.check(input);
+    }
+}
+
+
+// Main Application
+public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("=== Palindrome Checker App (UC13 Performance Comparison) ===");
-        System.out.print("Enter a string to check: ");
-        String input = scanner.nextLine().replaceAll("\\s+", "").toLowerCase(); // normalize input
+        String input = "Race car";   // Change input if needed
 
-        // Measure Approach 1
-        long start1 = System.nanoTime();
-        boolean result1 = isPalindromeUsingStringBuilder(input);
-        long end1 = System.nanoTime();
-        long time1 = end1 - start1;
+        // Choose strategy dynamically
+        PalindromeStrategy strategy = new StackStrategy();
+        // You can switch to:
+        // PalindromeStrategy strategy = new DequeStrategy();
 
-        // Measure Approach 2
-        long start2 = System.nanoTime();
-        boolean result2 = isPalindromeTwoPointer(input);
-        long end2 = System.nanoTime();
-        long time2 = end2 - start2;
+        PalindromeContext context = new PalindromeContext(strategy);
+
+        boolean result = context.execute(input);
 
         // Measure Approach 3
         long start3 = System.nanoTime();
