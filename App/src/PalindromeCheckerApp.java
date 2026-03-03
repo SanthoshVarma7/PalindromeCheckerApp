@@ -1,32 +1,35 @@
 class PalindromeCheckerApp {
 
-    // Recursive method to check palindrome
-    public static boolean isPalindrome(String str, int start, int end) {
+    // Method to check palindrome after preprocessing
+    public static boolean isPalindrome(String input) {
 
-        // Base Condition: If pointers cross or meet
-        if (start >= end) {
-            return true;
+        // Step 1: Normalize string
+        // Remove spaces and convert to lowercase
+        String normalized = input.replaceAll("\\s+", "").toLowerCase();
+
+        int start = 0;
+        int end = normalized.length() - 1;
+
+        // Step 2: Apply palindrome logic
+        while (start < end) {
+            if (normalized.charAt(start) != normalized.charAt(end)) {
+                return false;
+            }
+            start++;
+            end--;
         }
 
-        // If characters at start and end don't match
-        if (str.charAt(start) != str.charAt(end)) {
-            return false;
-        }
-
-        // Recursive call for remaining substring
-        return isPalindrome(str, start + 1, end - 1);
+        return true;
     }
 
     public static void main(String[] args) {
 
-        String input = "madam";   // You can change the input here
+        String input = "A man a plan a canal Panama";   // You can change input here
 
-        boolean result = isPalindrome(input, 0, input.length() - 1);
-
-        if (result) {
-            System.out.println(input + " is a Palindrome.");
+        if (isPalindrome(input)) {
+            System.out.println("\"" + input + "\"" + " is a Palindrome (Ignoring spaces & case).");
         } else {
-            System.out.println(input + " is NOT a Palindrome.");
+            System.out.println("\"" + input + "\"" + " is NOT a Palindrome.");
         }
     }
 }
