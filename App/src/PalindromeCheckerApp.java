@@ -58,11 +58,13 @@ class DequeStrategy implements PalindromeStrategy {
                 return false;
             }
         }
-
         return true;
     }
-}
 
+    // Approach 3: Using recursion
+    public static boolean isPalindromeRecursive(String str) {
+        return checkPalindromeRecursive(str, 0, str.length() - 1);
+    }
 
 // Context Class
 class PalindromeContext {
@@ -88,6 +90,7 @@ class PalindromeContext {
 public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
+        Scanner scanner = new Scanner(System.in);
 
         String input = "Race car";   // Change input if needed
 
@@ -100,10 +103,16 @@ public class PalindromeCheckerApp {
 
         boolean result = context.execute(input);
 
-        if (result) {
-            System.out.println("\"" + input + "\"" + " is a Palindrome.");
-        } else {
-            System.out.println("\"" + input + "\"" + " is NOT a Palindrome.");
-        }
+        // Measure Approach 3
+        long start3 = System.nanoTime();
+        boolean result3 = isPalindromeRecursive(input);
+        long end3 = System.nanoTime();
+        long time3 = end3 - start3;
+
+        // Display Results
+        System.out.println("\n--- Palindrome Results ---");
+        System.out.println("Using StringBuilder reverse: " + result1 + " (Time: " + time1 + " ns)");
+        System.out.println("Using Two-Pointer technique: " + result2 + " (Time: " + time2 + " ns)");
+        System.out.println("Using Recursion: " + result3 + " (Time: " + time3 + " ns)");
     }
 }
