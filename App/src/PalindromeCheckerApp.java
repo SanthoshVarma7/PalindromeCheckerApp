@@ -1,27 +1,40 @@
 import java.util.*;
 
-// Strategy Interface
-interface PalindromeStrategy {
+// Common Interface
+interface PalindromeAlgorithm {
     boolean isPalindrome(String input);
+    String getName();
 }
 
-// Stack-based Strategy Implementation
-class StackStrategy implements PalindromeStrategy {
+// Reverse String Strategy
+class ReverseStringAlgorithm implements PalindromeAlgorithm {
+
+    @Override
+    public boolean isPalindrome(String input) {
+        String processed = input.replaceAll("\\s+", "").toLowerCase();
+        String reversed = new StringBuilder(processed).reverse().toString();
+        return processed.equals(reversed);
+    }
+
+    @Override
+    public String getName() {
+        return "Reverse String Algorithm";
+    }
+}
+
+// Stack Strategy
+class StackAlgorithm implements PalindromeAlgorithm {
 
     @Override
     public boolean isPalindrome(String input) {
 
+        String processed = input.replaceAll("\\s+", "").toLowerCase();
         Stack<Character> stack = new Stack<>();
 
-        // Normalize string (remove spaces and convert to lowercase)
-        String processed = input.replaceAll("\\s+", "").toLowerCase();
-
-        // Push all characters to stack
         for (char ch : processed.toCharArray()) {
             stack.push(ch);
         }
 
-        // Compare characters while popping
         for (char ch : processed.toCharArray()) {
             if (ch != stack.pop()) {
                 return false;
@@ -30,25 +43,26 @@ class StackStrategy implements PalindromeStrategy {
 
         return true;
     }
+
+    @Override
+    public String getName() {
+        return "Stack Algorithm";
+    }
 }
 
-// Deque-based Strategy Implementation
-class DequeStrategy implements PalindromeStrategy {
+// Deque Strategy
+class DequeAlgorithm implements PalindromeAlgorithm {
 
     @Override
     public boolean isPalindrome(String input) {
 
+        String processed = input.replaceAll("\\s+", "").toLowerCase();
         Deque<Character> deque = new ArrayDeque<>();
 
-        // Normalize string (remove spaces and convert to lowercase)
-        String processed = input.replaceAll("\\s+", "").toLowerCase();
-
-        // Add all characters to deque
         for (char ch : processed.toCharArray()) {
             deque.addLast(ch);
         }
 
-        // Compare from both ends
         while (deque.size() > 1) {
             if (!deque.removeFirst().equals(deque.removeLast())) {
                 return false;
@@ -57,65 +71,46 @@ class DequeStrategy implements PalindromeStrategy {
 
         return true;
     }
-}
 
-// Context Class
-class PalindromeChecker {
-
-    private PalindromeStrategy strategy;
-
-    // Constructor Injection
-    public PalindromeChecker(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    // Setter Injection (Optional – for dynamic change)
-    public void setStrategy(PalindromeStrategy strategy) {
-        this.strategy = strategy;
-    }
-
-    public boolean check(String input) {
-        return strategy.isPalindrome(input);
+    @Override
+    public String getName() {
+        return "Deque Algorithm";
     }
 }
 
-// Main Application
+// Main Class
 public class PalindromeCheckerApp {
 
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("=== Palindrome Checker App (Strategy Pattern) ===");
+        System.out.println("=== Palindrome Checker App - Performance Comparison ===");
         System.out.print("Enter a string: ");
         String input = scanner.nextLine();
 
-        System.out.println("\nChoose Algorithm:");
-        System.out.println("1. Stack Strategy");
-        System.out.println("2. Deque Strategy");
-        System.out.print("Enter choice (1 or 2): ");
-        int choice = scanner.nextInt();
+        // List of algorithms
+        List<PalindromeAlgorithm> algorithms = Arrays.asList(
+                new ReverseStringAlgorithm(),
+                new StackAlgorithm(),
+                new DequeAlgorithm()
+        );
 
-        PalindromeStrategy strategy;
+        System.out.println("\nRunning Performance Comparison...\n");
 
-        // Inject strategy dynamically
-        if (choice == 1) {
-            strategy = new StackStrategy();
-        } else if (choice == 2) {
-            strategy = new DequeStrategy();
-        } else {
-            System.out.println("Invalid choice! Defaulting to Stack Strategy.");
-            strategy = new StackStrategy();
-        }
+        for (PalindromeAlgorithm algorithm : algorithms) {
 
-        PalindromeChecker checker = new PalindromeChecker(strategy);
+            long startTime = System.nanoTime();
 
-        boolean result = checker.check(input);
+            boolean result = algorithm.isPalindrome(input);
 
-        if (result) {
-            System.out.println("\nResult: The string is a PALINDROME.");
-        } else {
-            System.out.println("\nResult: The string is NOT a palindrome.");
+            long endTime = System.nanoTime();
+            long duration = endTime - startTime;
+
+            System.out.println("Algorithm: " + algorithm.getName());
+            System.out.println("Result   : " + (result ? "PALINDROME" : "NOT PALINDROME"));
+            System.out.println("Time Taken (nanoseconds): " + duration);
+            System.out.println("-----------------------------------------");
         }
 
         scanner.close();
